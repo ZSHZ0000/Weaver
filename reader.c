@@ -179,6 +179,7 @@ ReadStringTextLexema (FILE* Stream) {
 
       switch(CurrentCharacter) {
       case '"':
+	UpdatePeekCharacter(Stream);
 	return StringTextLexema;
 
       case '\\':
