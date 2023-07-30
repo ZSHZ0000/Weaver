@@ -308,6 +308,30 @@ ReadLexemaChain (FILE* Stream) {
   return LexemaChainHead;
 }
 
+/* Free a lexema. */
+void
+FreeLexema (struct Lexema* Lexema) {
+  DeLexema(Lexema);
+  free(Lexema);
+}
+
+/* Free a lexema slab, return address of the next lexema. */
+struct LexemaChain*
+FreeLexemaSlab (struct LexemaChain* LexemaSlab) {
+  FreeLexema(LexemaSlab->Lexema);
+  struct LexemaChain* NextLexemaSlab = LexemaSlab->Next;
+  free(LexemaSlab);
+  return NextLexemaSlab;
+}
+
+/* Free a lexema chain. */
+void
+FreeLexemaChain (struct LexemaChain* LexemaChainHead) {
+  struct LexemaChain* CurrentSlab = LexemaChainHead;
+  while (CurrentSlab)
+    CurrentSlab = FreeLexemaSlab(CurrentSlab);
+}
+
 /** FROM HERE NOW IT IS TEST CODE. **/
 
 void
@@ -396,5 +420,6 @@ main (int argc, char** argv) {
   struct LexemaChain* LexemaChain = ReadLexemaChain(input);
   for (struct LexemaChain* Lexema = LexemaChain; Lexema; Lexema = Lexema->Next)
     Print(Lexema->Lexema, stdout);
+  FreeLexemaChain(LexemaChain);
   return 0;
 }
