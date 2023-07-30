@@ -37,7 +37,6 @@ GotError () {
   return CurrentCharacter == ERROR_VALUE;
 }
 
-
 /* Checks if it is whitespace character. */
 _Bool
 IsWhiteSpace (char Character) {
@@ -414,7 +413,7 @@ main (int argc, char** argv) {
   if (!input) {
     fprintf(stderr, "File does not exist or is not accessible.\n");
     return 1;
-    }
+  }
   
   UpdatePeekCharacter(input);
   struct LexemaChain* LexemaChain = ReadLexemaChain(input);

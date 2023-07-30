@@ -33,4 +33,10 @@ struct LexemaChain {
   struct LexemaChain* Next;
 };
 
+struct LexemaChain*
+ReadLexemaChain (FILE* Stream);
+
+void
+FreeLexemaChain (struct LexemaChain* LexemaChainHead);
+
 #endif /* READER_H */
