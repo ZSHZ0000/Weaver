@@ -3,7 +3,7 @@ FLAGS := -Og -g
 
 .PHONY:
 
-$(EXE): reader.o
+$(EXE): driver.o read.o reader.o alloc.o
 	cc -o $@ $^
 
 .PHONY: .c.o
@@ -11,7 +11,10 @@ $(EXE): reader.o
 .c.o:
 	cc -c -o $@ $< $(FLAGS) 
 
+driver.o: driver.c
+read.o: read.c
 reader.o: reader.c
+alloc.o: alloc.c
 
 clean:
 	rm -rf *.o $(EXE) || true

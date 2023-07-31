@@ -33,6 +33,9 @@ struct LexemaChain {
   struct LexemaChain* Next;
 };
 
+_Bool
+IsNumeric (char Character);
+
 struct LexemaChain*
 ReadLexemaChain (FILE* Stream);
 
