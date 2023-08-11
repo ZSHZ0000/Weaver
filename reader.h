@@ -36,6 +36,8 @@ struct LexemaChain {
 struct LexemaIndex {
   struct LexemaChain* Chain;
   struct LexemaChain* CurrentSlab;
+  struct Lexema* NoLexema;
+  struct LexemaChain* NoSlab;
 };
 
 _Bool
