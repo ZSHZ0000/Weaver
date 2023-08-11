@@ -191,3 +191,25 @@ MakeSymbol (char* InputString, size_t Length) {
   Symbol->Name = UntagString(MakeSmallString(InputString, Length));
   return TagSymbol(Symbol);
 }
+
+/** TYPE PREDICATES. **/
+
+_Bool
+ConsTypeP (LispObjectImm Object) {
+  return Object | CONS_CELL;
+}
+
+_Bool
+IntegerTypeP (LispObjectImm Object) {
+  return Object | INTEGER_OBJ;
+}
+
+_Bool
+SymbolTypeP (LispObjectImm Object) {
+  return Object | SYMBOL_OBJ;
+}
+
+_Bool
+StringTypeP (LispObjectImm Object) {
+  return Object | STRING_OBJ;
+}

@@ -108,4 +108,16 @@ AllocFreeSymbol ();
 LispObjectImm
 MakeSymbol (char* InputString, size_t Length);
 
+_Bool
+ConsTypeP (LispObjectImm Object);
+
+_Bool
+IntegerTypeP (LispObjectImm Object);
+
+_Bool
+SymbolTypeP (LispObjectImm Object);
+
+_Bool
+StringTypeP (LispObjectImm Object);
+
 #endif /* ALLOC_H */
