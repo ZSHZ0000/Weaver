@@ -1,0 +1,33 @@
+* List of TODO stuff for [Current Project Name]
+
+** TODO Make it work.
+Currently we only have core components in the works.
+
+** TODO Garbage collector.
+We need this, currently we can only allocate a fixed amount of objects.
+
+** TODO Clean up the source code.
+It is very messy.
+
+** TODO Restructure source code.
+The way it is laid ou is messy.
+
+** TODO Error handling.
+This will without a doubt catch in flames if you look at it wrong.
+
+** TODO Standard library.
+This one is needed for actually useful stuff.
+
+** TODO Macros?
+This may be considered since it is a Lisp & such languages can benefit largely
+from macros.
+
+** TODO Give it a definitive name.
+I got no good name for it.
+
+** TODO Implement a virtual machine & a compiler accordingly.
+This is certainly ambitious yet something we may need in order to make this
+an actual usable implementation.
+
+** TODO Multithreading primitives.
+This one is a must for actual applications.
