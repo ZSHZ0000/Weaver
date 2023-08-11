@@ -43,6 +43,12 @@ struct ConsObjectArena {
 
 #define CONS_CELLS_PER_ARENA 65536
 
+LispObjectImm
+TagCons (struct ConsObject* Cons);
+
+struct ConsObject*
+UntagCons (LispObjectImm Cons);
+
 void
 SetConsCar (struct ConsObject* ConsCell,  LispObjectImm Value);
 
@@ -76,6 +82,12 @@ AllocFreeSmallString ();
 LispObjectImm
 MakeSmallString (char* InputString, size_t Length);
 
+LispObjectImm
+TagString (struct StringObject* String);
+
+struct StringObject*
+UntagString (LispObjectImm String);
+
 struct SymbolObjectArena {
   size_t FreeCount;
   struct SymbolObject* NextFree;
@@ -83,6 +95,12 @@ struct SymbolObjectArena {
 };
 
 #define SYMBOLS_PER_ARENA 2048
+
+LispObjectImm
+TagSymbol (struct SymbolObject* Symbol);
+
+struct SymbolObject*
+UntagSymbol (LispObjectImm Symbol);
 
 void
 AllocFreeSymbol ();
