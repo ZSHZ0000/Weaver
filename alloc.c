@@ -124,7 +124,7 @@ GetSmallString () {
   SmallString->Length = 0;
   /* The pointer is not intended to be used as-is but I rather have it initialized to something. */
   SmallString->String = (char*) ((uintptr_t) SmallString + sizeof(size_t));
-  FreeCons.NextFree += sizeof(size_t) + sizeof(char) * SMALL_STRING_SIZE; /* Constant folding EZ. */
+  FreeSmallString.NextFree += sizeof(size_t) + sizeof(char) * SMALL_STRING_SIZE; /* Constant folding EZ. */
   return SmallString;
 }
 
@@ -136,7 +136,7 @@ MakeSmallString (char* InputString, size_t Length) {
   
   struct StringObject* SmallString = GetSmallString();
   /* We're using the address we initialized with in the function above. */
-  memcpy(SmallString->String, InputString, Length > 32 ? 32 : Length);
+  memcpy(&SmallString->String, InputString, Length > 32 ? 32 : Length);
   return TagString(SmallString);
 }
 
@@ -196,20 +196,20 @@ MakeSymbol (char* InputString, size_t Length) {
 
 _Bool
 ConsTypeP (LispObjectImm Object) {
-  return Object | CONS_CELL;
+  return (Object & TYPEFIELD) ==  CONS_CELL;
 }
 
 _Bool
 IntegerTypeP (LispObjectImm Object) {
-  return Object | INTEGER_OBJ;
+  return (Object & TYPEFIELD) == INTEGER_OBJ;
 }
 
 _Bool
 SymbolTypeP (LispObjectImm Object) {
-  return Object | SYMBOL_OBJ;
+  return (Object & TYPEFIELD) == SYMBOL_OBJ;
 }
 
 _Bool
 StringTypeP (LispObjectImm Object) {
-  return Object | STRING_OBJ;
+  return (Object & TYPEFIELD) == STRING_OBJ;
 }
