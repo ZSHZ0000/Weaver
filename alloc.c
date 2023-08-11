@@ -184,7 +184,7 @@ GetSymbol () {
 LispObjectImm
 MakeSymbol (char* InputString, size_t Length) {
   /* TODO: ADD HUGESTRING SUPPORT (literally just long strings)!!! */
-  if (Length > SMALL_STRINGS_PER_ARENA)
+  if (Length > SMALL_STRING_SIZE)
     fprintf(stderr, "Input string of length above %d passed to MakeSymbol", SMALL_STRING_SIZE);
 
   struct SymbolObject* Symbol = GetSymbol();
