@@ -115,7 +115,7 @@ struct StringObject*
 GetSmallString () {
   /* TODO: A PROPER LISP WOULDN'T PANIC & GARBAGE COLLECT INSTEAD!!! */
   if (FreeSmallString.FreeCount < 1) {
-    fprintf(stderr, "Small strings arena has ran out of small strings.");
+    fprintf(stderr, "GetSmallString: Small strings arena has ran out of small strings.");
     exit(2);
   }
 
@@ -168,7 +168,7 @@ struct SymbolObject*
 GetSymbol () {
   /* TODO: A PROPER LISP WOULDN'T PANIC & GARBAGE COLLECT INSTEAD!!! */
   if (FreeSymbol.FreeCount < 1) {
-    fprintf(stderr, "Small strings arena has ran out of small strings.");
+    fprintf(stderr, "GetSymbol: Small strings arena has ran out of small strings.");
     exit(2);
   }
 
