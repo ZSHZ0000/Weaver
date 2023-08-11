@@ -33,13 +33,33 @@ struct LexemaChain {
   struct LexemaChain* Next;
 };
 
+struct LexemaIndex {
+  struct LexemaChain* Chain;
+  struct LexemaChain* CurrentSlab;
+};
+
 _Bool
 IsNumeric (char Character);
+
+void
+UpdatePeekCharacter ();
 
 struct LexemaChain*
 ReadLexemaChain (FILE* Stream);
 
 void
 FreeLexemaChain (struct LexemaChain* LexemaChainHead);
+
+struct LexemaIndex*
+MakeLexemaIndex (struct LexemaChain* LexemaChain);
+
+struct Lexema*
+PeekLexema (struct LexemaIndex* LexemaIndex);
+
+void
+NextLexema (struct LexemaIndex* LexemaIndex);
+
+void
+FreeLexemaIndex (struct LexemaIndex* LexemaIndex);
 
 #endif /* READER_H */

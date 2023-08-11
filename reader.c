@@ -330,3 +330,30 @@ FreeLexemaChain (struct LexemaChain* LexemaChainHead) {
   while (CurrentSlab)
     CurrentSlab = FreeLexemaSlab(CurrentSlab);
 }
+
+/* Create a lexema chain index. */
+struct LexemaIndex*
+MakeLexemaIndex (struct LexemaChain* LexemaChain) {
+  struct LexemaIndex* LexemaIndex = malloc(sizeof(struct LexemaIndex));
+  LexemaIndex->Chain = LexemaChain;
+  LexemaIndex->CurrentSlab = LexemaChain;
+  return LexemaIndex;
+}
+
+/* Peek the next lexema from the lexema index. */
+struct Lexema*
+PeekLexema (struct LexemaIndex* LexemaIndex) {
+  return LexemaIndex->CurrentSlab->Lexema;
+}
+
+/* Ditch current lexema, NOTEWORTHY IT DOES NOT DEALLOCATE IT. */
+void
+NextLexema (struct LexemaIndex* LexemaIndex) {
+  LexemaIndex->CurrentSlab = LexemaIndex->CurrentSlab->Next;
+}
+
+/* Free lexema index. */
+void
+FreeLexemaIndex (struct LexemaIndex* LexemaIndex) {
+  free(LexemaIndex);
+}
