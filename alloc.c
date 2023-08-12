@@ -7,13 +7,13 @@
 /* Tag an integer. */
 LispObjectImm
 TagInt (intptr_t Integer) {
-  return (LispObjectImm) (Integer | INTEGER_OBJ);
+  return (LispObjectImm) (Integer << 3) | INTEGER_OBJ;
 }
 
 /* Untag an integer. */
 intptr_t
 UntagInt (LispObjectImm Integer) {
-  return (intptr_t) Integer - INTEGER_OBJ;
+  return (intptr_t) Integer >> 3;
 }
 
 /* We don't need this but for the sake of future-proofing we have it. */
@@ -94,7 +94,7 @@ TagString (struct StringObject* String) {
 
 struct StringObject*
 UntagString (LispObjectImm String) {
-  return (struct StringObject*) String - STRING_OBJ;
+  return (struct StringObject*) (String ^ STRING_OBJ);
 }
 
 /* Our small strings arena. */
@@ -104,8 +104,7 @@ static struct SmallStringObjectArena FreeSmallString;
 void
 AllocFreeSmallString () {
   /* size_t = Size, char[SMALL_STRING_SIZE] = String. */
-  FreeSmallString.SmallStrings = malloc(sizeof(size_t) * SMALL_STRINGS_PER_ARENA +
-				    sizeof(char) * SMALL_STRING_SIZE * SMALL_STRINGS_PER_ARENA);
+  FreeSmallString.SmallStrings = malloc(SMALL_STRINGS_PER_ARENA * (sizeof(size_t) + sizeof(char) * SMALL_STRING_SIZE));
   FreeSmallString.FreeCount = SMALL_STRINGS_PER_ARENA;
   FreeSmallString.NextFree = FreeSmallString.SmallStrings;
 }
@@ -122,9 +121,8 @@ GetSmallString () {
   FreeSmallString.FreeCount--;
   struct StringObject* SmallString = FreeSmallString.NextFree;
   SmallString->Length = 0;
-  /* The pointer is not intended to be used as-is but I rather have it initialized to something. */
-  SmallString->String = (char*) ((uintptr_t) SmallString + sizeof(size_t));
-  FreeSmallString.NextFree += sizeof(size_t) + sizeof(char) * SMALL_STRING_SIZE; /* Constant folding EZ. */
+  /* Constant folding EZ. */
+  FreeSmallString.NextFree = (struct StringObject*) ((intptr_t) FreeSmallString.NextFree + sizeof(size_t) + sizeof(char) * SMALL_STRING_SIZE);
   return SmallString;
 }
 
@@ -135,7 +133,8 @@ MakeSmallString (char* InputString, size_t Length) {
     fprintf(stderr, "Input string of length above %d passed to MakeSmallString", SMALL_STRING_SIZE);
   
   struct StringObject* SmallString = GetSmallString();
-  /* We're using the address we initialized with in the function above. */
+  SmallString->Length = Length > 32 ? 32 : Length;
+
   memcpy(&SmallString->String, InputString, Length > 32 ? 32 : Length);
   return TagString(SmallString);
 }
@@ -149,7 +148,7 @@ TagSymbol (struct SymbolObject* Symbol) {
 /* Untag a symbol. */
 struct SymbolObject*
 UntagSymbol (LispObjectImm Symbol) {
-  return (struct SymbolObject*) Symbol - SYMBOL_OBJ;
+  return (struct SymbolObject*) (Symbol ^ SYMBOL_OBJ);
 }
 
 /* Our symbol arena. */
@@ -196,7 +195,7 @@ MakeSymbol (char* InputString, size_t Length) {
 
 _Bool
 ConsTypeP (LispObjectImm Object) {
-  return (Object & TYPEFIELD) ==  CONS_CELL;
+  return (Object & TYPEFIELD) == CONS_CELL;
 }
 
 _Bool

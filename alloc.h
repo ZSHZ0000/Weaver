@@ -13,7 +13,7 @@ enum ObjectType {
   STRING_OBJ
 };
 
-#define TYPEFIELD CONS_CELL | INTEGER_OBJ | SYMBOL_OBJ | STRING_OBJ
+#define TYPEFIELD (CONS_CELL | INTEGER_OBJ | SYMBOL_OBJ | STRING_OBJ)
 
 struct SymbolObject {
   struct StringObject* Name;
@@ -28,7 +28,7 @@ struct ConsObject {
 
 struct StringObject {
   size_t Length;
-  char* String;
+  char String[];
 };
 
 LispObjectImm
