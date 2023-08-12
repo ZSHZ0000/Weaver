@@ -57,27 +57,26 @@ ReadListObj (struct LexemaIndex* LexemaIndex) {
     return 0;
   /* Guard if. */
   if (PeekLexema(LexemaIndex)->Type == OPEN_PAREN) {
+    NextLexema(LexemaIndex);
     LispObjectImm Head = 0;
 
-    NextLexema(LexemaIndex);
     if (PeekLexema(LexemaIndex)->Type == EOF_LEXEMA || (PeekLexema(LexemaIndex) == NO_LEXEMA))
       return 0;
     if (PeekLexema(LexemaIndex)->Type == CLOSE_PAREN) {
-      /* TODO: Return NIL or return an empty list. */
-      NextLexema(LexemaIndex);
       return 0;
     }
 
+    /* List init. */
     Head = MakeConsCell(ReadObject1(LexemaIndex), 0);
     LispObjectImm Tail = Head;
 
-    while (PeekLexema(LexemaIndex)->Type != EOF_LEXEMA && PeekLexema(LexemaIndex)->Type != NO_LEXEMA)
-      {
-	if (PeekLexema(LexemaIndex)->Type == CLOSE_PAREN)
-	  return Head;
-	SetConsCdr(UntagCons(Tail), MakeConsCell(ReadObject1(LexemaIndex), 0));
-	NextLexema(LexemaIndex);
-      }
+    while (PeekLexema(LexemaIndex)->Type != EOF_LEXEMA && PeekLexema(LexemaIndex)->Type != NO_LEXEMA) {
+      if (PeekLexema(LexemaIndex)->Type == CLOSE_PAREN)
+	return Head;
+      LispObjectImm NextTail = MakeConsCell(ReadObject1(LexemaIndex), 0);
+      SetConsCdr(UntagCons(Tail), NextTail);
+      Tail = NextTail;
+    }
   }
   /* Unreachable if control code is proper. */
   return 0;
@@ -122,10 +121,10 @@ ReadObject1 (struct LexemaIndex* LexemaIndex) {
 
   case QUOTE: {
     NextLexema(LexemaIndex);
-      /* We need the quote symbol here. */
+    /* We need the quote symbol here. */
     LispObjectImm QuotedObject = MakeConsCell(0, ReadObject1(LexemaIndex));
     NextLexema(LexemaIndex);
     return QuotedObject;
-    }
+  }
   }
 }
