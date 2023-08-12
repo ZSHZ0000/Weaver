@@ -126,5 +126,9 @@ ReadObject1 (struct LexemaIndex* LexemaIndex) {
     NextLexema(LexemaIndex);
     return QuotedObject;
   }
+
+    /* Control should NEVER reach here, this should raise an error. */
+  default:
+    return 0;
   }
 }

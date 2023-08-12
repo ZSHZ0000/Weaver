@@ -246,7 +246,7 @@ QuoteLexema (FILE* Stream) {
 
 /* Make EOF lexema. */
 struct Lexema*
-EOFLexema (FILE* Stream) {
+EOFLexema () {
   struct Lexema* Lexema = NoLexema();
   Lexema->Type = EOF_LEXEMA;
   return Lexema;

@@ -44,7 +44,7 @@ _Bool
 IsNumeric (char Character);
 
 void
-UpdatePeekCharacter ();
+UpdatePeekCharacter (FILE* Stream);
 
 struct LexemaChain*
 ReadLexemaChain (FILE* Stream);
