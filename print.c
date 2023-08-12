@@ -33,7 +33,7 @@ PrintList (LispObjectImm List, FILE* Stream) {
   PrintObject1(GetConsCar(UntagCons(List)), Stream);
   /* TODO: Change the 0 for NIL or empty list or whatever. */
   if (GetConsCdr(UntagCons(List)) != 0) {
-    for (LispObjectImm Cons = List; Cons != 0; Cons = GetConsCdr(UntagCons(Cons))) {
+    for (LispObjectImm Cons = GetConsCdr(UntagCons(List)); Cons != 0; Cons = GetConsCdr(UntagCons(Cons))) {
       putc(' ', Stream);
       PrintObject1(GetConsCar(UntagCons(Cons)), Stream);
     }
