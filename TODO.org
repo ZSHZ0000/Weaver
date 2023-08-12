@@ -1,7 +1,11 @@
 * List of TODO stuff for [Current Project Name]
 
 ** TODO Make it work.
-Currently we only have core components in the works.
+We have the reader & printer working appropiately, we are still missing:
+- The evaluator.
+- Environments.
+- Obarray (interned symbols).
+- Long strings (only short strings are currently supported).
 
 ** TODO Garbage collector.
 We need this, currently we can only allocate a fixed amount of objects.
