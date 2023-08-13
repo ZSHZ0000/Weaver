@@ -20,7 +20,7 @@ ReadStringType (struct Lexema* Lexema) {
 LispObjectImm
 ReadSymbolType (struct Lexema* Lexema) {
   /* TODO: We need an obarray. */
-  return MakeSymbol(Lexema->String, Lexema->Length);
+  return FindOrMakeSymbol(Lexema->String, Lexema->Length);
 }
 
 /* Parse an integer string into an actual integer. */

@@ -20,6 +20,7 @@ main (int argc, char** argv) {
   AllocFreeCons();
   AllocFreeSymbol();
   AllocFreeSmallString();
+  AllocObarray();
   
   UpdatePeekCharacter(input);
   struct LexemaChain* LexemaChain = ReadLexemaChain(input);
@@ -28,6 +29,7 @@ main (int argc, char** argv) {
   LispObjectImm Object = ReadObject1(LexemaIndex);
   PrintObject1(Object, stdout);
   fprintf(stdout, "\n");
+  PrintAllocationStatistics(stderr);
 
   FreeLexemaIndex(LexemaIndex);
   FreeLexemaChain(LexemaChain);

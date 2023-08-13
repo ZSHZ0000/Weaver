@@ -61,6 +61,7 @@ AllocFreeCons () {
   FreeCons.ConsCells = malloc(CONS_CELLS_PER_ARENA * sizeof(struct ConsObject));
   FreeCons.FreeCount = CONS_CELLS_PER_ARENA;
   FreeCons.NextFree = FreeCons.ConsCells;
+  FreeCons.TotalAllocations = 0;
 }
 
 /* Get a cons cell from our FreeCons arena. */
@@ -73,6 +74,7 @@ GetConsCell () {
   }
 
   FreeCons.FreeCount--;
+  FreeCons.TotalAllocations++;
   struct ConsObject* Cell = FreeCons.NextFree;
   FreeCons.NextFree += sizeof(struct ConsObject);
   return Cell;
@@ -107,6 +109,7 @@ AllocFreeSmallString () {
   FreeSmallString.SmallStrings = malloc(SMALL_STRINGS_PER_ARENA * (sizeof(size_t) + sizeof(char) * SMALL_STRING_SIZE));
   FreeSmallString.FreeCount = SMALL_STRINGS_PER_ARENA;
   FreeSmallString.NextFree = FreeSmallString.SmallStrings;
+  FreeSmallString.TotalAllocations = 0;
 }
 
 /* Get a small string from our small strings arena. */
@@ -119,6 +122,7 @@ GetSmallString () {
   }
 
   FreeSmallString.FreeCount--;
+  FreeSmallString.TotalAllocations++;
   struct StringObject* SmallString = FreeSmallString.NextFree;
   SmallString->Length = 0;
   /* Constant folding EZ. */
@@ -160,6 +164,7 @@ AllocFreeSymbol () {
   FreeSymbol.Symbols = malloc(sizeof(struct SymbolObject) * SYMBOLS_PER_ARENA);
   FreeSymbol.FreeCount = SYMBOLS_PER_ARENA;
   FreeSymbol.NextFree = FreeSymbol.Symbols;
+  FreeSymbol.TotalAllocations = 0;
 }
 
 /* Get a symbol. */
@@ -172,9 +177,11 @@ GetSymbol () {
   }
 
   FreeSymbol.FreeCount--;
+  FreeSymbol.TotalAllocations++;
   struct SymbolObject* Symbol = FreeSymbol.NextFree;
   /* This will be properly initialized forth. */
   Symbol->Name = NULL;
+  Symbol->Hash = 0;
   FreeSymbol.NextFree += sizeof(struct SymbolObject);
   return Symbol;
 }
@@ -188,6 +195,7 @@ MakeSymbol (char* InputString, size_t Length) {
 
   struct SymbolObject* Symbol = GetSymbol();
   Symbol->Name = UntagString(MakeSmallString(InputString, Length));
+  Symbol->Hash = FNV1AHash(Symbol->Name->String, Symbol->Name->Length);
   return TagSymbol(Symbol);
 }
 
@@ -211,4 +219,91 @@ SymbolTypeP (LispObjectImm Object) {
 _Bool
 StringTypeP (LispObjectImm Object) {
   return (Object & TYPEFIELD) == STRING_OBJ;
+}
+
+/** OBARRAY. **/
+
+static struct ObarrayHashtable* GlobalObarray;
+
+/* Allocate the global obarray, this is what makes symbols useful. */
+void
+AllocObarray () {
+  /* (Size + Fullness) + BucketsArray */
+  GlobalObarray = malloc(sizeof(size_t) * 2 + sizeof(struct ObarrayBucket) * INITIAL_OBARRAY_SIZE);
+  GlobalObarray->Size = INITIAL_OBARRAY_SIZE;
+  GlobalObarray->Fullness = 0;
+  for (size_t i = 0; i < GlobalObarray->Size; i++) {
+    GlobalObarray->Buckets->Next = NULL;
+    GlobalObarray->Buckets->Symbol = NULL;
+  }
+}
+
+/* Our hash function. */
+uintptr_t
+FNV1AHash (char* String, size_t Length) {
+  /* NOTE: Maybe naming the offset basis constant might be a good idea. */
+  uintptr_t Hash = 14695981039346656057UL;
+
+  for (size_t i = 0; i < Length; i++) {
+    Hash ^= String[i];
+    Hash *= 1099511628211UL;
+  }
+  return (intptr_t) Hash;
+}
+
+/* Insert a symbol into a bucket from the obarray. */
+void
+InsertIntoBucket (struct ObarrayBucket* Bucket, struct SymbolObject* Symbol) {
+  if (!Bucket->Symbol) {
+    Bucket->Symbol = Symbol;
+    return;
+  }
+  struct ObarrayBucket* NextBucket = NULL;
+  struct ObarrayBucket* PrevBucket = Bucket;
+
+  for (NextBucket = PrevBucket->Next; NextBucket; PrevBucket = NextBucket);
+
+  PrevBucket->Next = malloc(sizeof(struct ObarrayBucket));
+  NextBucket = PrevBucket->Next;
+  NextBucket->Symbol = Symbol;
+  NextBucket->Next = NULL;
+}
+
+/* Put the symbol into the obarray so we can fetch it & return it instead of allocating more new symbols. */
+void
+InternSymbol (struct SymbolObject* Symbol) {
+  size_t Place = Symbol->Hash % GlobalObarray->Size;
+  InsertIntoBucket(&GlobalObarray->Buckets[Place], Symbol);
+  GlobalObarray->Fullness++;
+}
+
+/* Lookup a symbol in the obarray.. */
+struct SymbolObject*
+LookupSymbol (char* String, size_t Length) {
+  uintptr_t Hash = FNV1AHash(String, Length);
+  struct ObarrayBucket* Bucket = &GlobalObarray->Buckets[Hash % GlobalObarray->Size];
+  for (; Bucket; Bucket = Bucket->Next) {
+    if (Bucket->Symbol && Bucket->Symbol->Hash == Hash)
+      return Bucket->Symbol;
+  }
+  return NULL;
+}
+
+/* Intern or get a symbol named by the input. */
+LispObjectImm
+FindOrMakeSymbol (char* String, size_t Length) {
+  struct SymbolObject* Symbol = LookupSymbol(String, Length);
+  if (Symbol)
+    return TagSymbol(Symbol);
+  Symbol = UntagSymbol(MakeSymbol(String, Length));
+  InternSymbol(Symbol);
+  return TagSymbol(Symbol);
+}
+
+/* Print statistics. */
+void
+PrintAllocationStatistics (FILE* Stream) {
+  fprintf(Stream, "Cons cells allocated: %ld\n", FreeCons.TotalAllocations);
+  fprintf(Stream, "Small strings allocated: %ld\n", FreeSmallString.TotalAllocations);
+  fprintf(Stream, "Symbols allocated: %ld\n", FreeSymbol.TotalAllocations);
 }

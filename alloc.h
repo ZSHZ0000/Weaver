@@ -17,6 +17,7 @@ enum ObjectType {
 
 struct SymbolObject {
   struct StringObject* Name;
+  uintptr_t Hash;
 };
 
 typedef intptr_t LispObjectImm;
@@ -38,6 +39,7 @@ intptr_t
 UntagInt (LispObjectImm Integer);
 
 struct ConsObjectArena {
+  size_t TotalAllocations;
   size_t FreeCount;
   struct ConsObject* NextFree;
   struct ConsObject* ConsCells;
@@ -70,6 +72,7 @@ LispObjectImm
 MakeConsCell (LispObjectImm Car, LispObjectImm Cdr);
 
 struct SmallStringObjectArena {
+  size_t TotalAllocations;
   size_t FreeCount;
   struct StringObject* NextFree;
   struct StringObject* SmallStrings;
@@ -91,6 +94,7 @@ struct StringObject*
 UntagString (LispObjectImm String);
 
 struct SymbolObjectArena {
+  size_t TotalAllocations;
   size_t FreeCount;
   struct SymbolObject* NextFree;
   struct SymbolObject* Symbols;
@@ -121,5 +125,33 @@ SymbolTypeP (LispObjectImm Object);
 
 _Bool
 StringTypeP (LispObjectImm Object);
+
+#define INITIAL_OBARRAY_SIZE 71
+
+struct ObarrayBucket {
+  struct SymbolObject* Symbol;
+  struct ObarrayBucket* Next;
+};
+
+struct ObarrayHashtable {
+  size_t Size;
+  size_t Fullness;
+  struct ObarrayBucket Buckets[];
+};
+
+void
+AllocObarray ();
+
+uintptr_t
+FNV1AHash (char* String, size_t Length);
+
+void
+InternSymbol (struct SymbolObject* Symbol);
+
+LispObjectImm
+FindOrMakeSymbol (char* String, size_t Length);
+
+void
+PrintAllocationStatistics (FILE* Stream);
 
 #endif /* ALLOC_H */

@@ -4,17 +4,19 @@
 We have the reader & printer working appropiately, we are still missing:
 - The evaluator.
 - Environments.
-- Obarray (interned symbols).
-- Long strings (only short strings are currently supported).
 
 ** TODO Garbage collector.
 We need this, currently we can only allocate a fixed amount of objects.
 
 ** TODO Clean up the source code.
 It is very messy.
+- We could attempt to unify the main obarray with a hashtable type implementation
+  (we do not have such type yet).
+- Replace all 0 returns with error handling & proper values.
+- Long string support (only short strings are currently supported).
 
 ** TODO Restructure source code.
-The way it is laid ou is messy.
+The way it is laid out is messy.
 
 ** TODO Error handling.
 This will without a doubt catch in flames if you look at it wrong.
