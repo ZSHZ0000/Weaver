@@ -117,7 +117,7 @@ struct StringObject*
 GetSmallString () {
   /* TODO: A PROPER LISP WOULDN'T PANIC & GARBAGE COLLECT INSTEAD!!! */
   if (FreeSmallString.FreeCount < 1) {
-    fprintf(stderr, "GetSmallString: Small strings arena has ran out of small strings.");
+    fprintf(stderr, "GetSmallString: Small strings arena has ran out of small strings.\n");
     exit(2);
   }
 
@@ -134,7 +134,7 @@ GetSmallString () {
 LispObjectImm
 MakeSmallString (char* InputString, size_t Length) {
   if (Length > SMALL_STRING_SIZE)
-    fprintf(stderr, "Input string of length above %d passed to MakeSmallString", SMALL_STRING_SIZE);
+    fprintf(stderr, "Input string of length above %d passed to MakeSmallString\n", SMALL_STRING_SIZE);
   
   struct StringObject* SmallString = GetSmallString();
   SmallString->Length = Length > 32 ? 32 : Length;
@@ -172,7 +172,7 @@ struct SymbolObject*
 GetSymbol () {
   /* TODO: A PROPER LISP WOULDN'T PANIC & GARBAGE COLLECT INSTEAD!!! */
   if (FreeSymbol.FreeCount < 1) {
-    fprintf(stderr, "GetSymbol: Small strings arena has ran out of small strings.");
+    fprintf(stderr, "GetSymbol: Symbol arena has ran out of symbols.\n");
     exit(2);
   }
 
@@ -191,7 +191,7 @@ LispObjectImm
 MakeSymbol (char* InputString, size_t Length) {
   /* TODO: ADD HUGESTRING SUPPORT (literally just long strings)!!! */
   if (Length > SMALL_STRING_SIZE)
-    fprintf(stderr, "Input string of length above %d passed to MakeSymbol", SMALL_STRING_SIZE);
+    fprintf(stderr, "Input string of length above %d passed to MakeSymbol\n", SMALL_STRING_SIZE);
 
   struct SymbolObject* Symbol = GetSymbol();
   Symbol->Name = UntagString(MakeSmallString(InputString, Length));
