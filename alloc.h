@@ -5,15 +5,17 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include "fn.h"
 
 enum ObjectType {
   CONS_CELL,
   INTEGER_OBJ,
   SYMBOL_OBJ,
-  STRING_OBJ
+  STRING_OBJ,
+  FN_OBJ
 };
 
-#define TYPEFIELD (CONS_CELL | INTEGER_OBJ | SYMBOL_OBJ | STRING_OBJ)
+#define TYPEFIELD (CONS_CELL | INTEGER_OBJ | SYMBOL_OBJ | STRING_OBJ | FN_OBJ)
 
 struct SymbolObject {
   struct StringObject* Name;
@@ -30,6 +32,13 @@ struct ConsObject {
 struct StringObject {
   size_t Length;
   char String[];
+};
+
+struct FnObject {
+  enum FnType Type;
+  size_t MinArgs;
+  size_t MaxArgs;
+  void* Fn;
 };
 
 LispObjectImm
@@ -114,6 +123,24 @@ AllocFreeSymbol ();
 LispObjectImm
 MakeSymbol (char* InputString, size_t Length);
 
+struct FnObjectArena {
+  size_t TotalAllocations;
+  size_t FreeCount;
+  struct FnObject* NextFn;
+  struct FnObject* Fns;
+};
+
+#define FUNCTIONS_PER_ARENA 128
+
+LispObjectImm
+TagFn (struct FnObject* Fn);
+
+struct FnObject*
+UntagFn (LispObjectImm Fn);
+
+void
+AllocFreeFn ();
+
 _Bool
 ConsTypeP (LispObjectImm Object);
 
@@ -126,7 +153,16 @@ SymbolTypeP (LispObjectImm Object);
 _Bool
 StringTypeP (LispObjectImm Object);
 
-#define INITIAL_OBARRAY_SIZE 71
+_Bool
+FnTypeP (LispObjectImm Object);
+
+_Bool
+BuiltInFnP (LispObjectImm Object);
+
+_Bool
+InterpLambdaP (LispObjectImm Object);
+
+#define INITIAL_OBARRAY_SIZE 256
 
 struct ObarrayBucket {
   struct SymbolObject* Symbol;

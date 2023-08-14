@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 #include "alloc.h"
+#include "fn.h"
 
 /* Tag an integer. */
 LispObjectImm
@@ -199,6 +200,50 @@ MakeSymbol (char* InputString, size_t Length) {
   return TagSymbol(Symbol);
 }
 
+/* Tag a function object. */
+LispObjectImm
+TagFn (struct FnObject* Fn) {
+  return (LispObjectImm) Fn | FN_OBJ;
+}
+
+/* Untag a function object. */
+struct FnObject*
+UntagFn (LispObjectImm Fn) {
+  return (struct FnObject*) (Fn ^ FN_OBJ);
+}
+
+/* Free function arena. */
+static struct FnObjectArena FreeFn;
+
+/* Allocate free function objects. */
+void
+AllocFreeFn () {
+  FreeFn.Fns = malloc(sizeof(struct SymbolObject) * FUNCTIONS_PER_ARENA);
+  FreeFn.FreeCount = FUNCTIONS_PER_ARENA;
+  FreeFn.NextFn = FreeFn.Fns;
+  FreeFn.TotalAllocations = 0;
+}
+
+/* Get a function object: UNINITIALIZED. */
+struct FnObject*
+GetFn () {
+  if (FreeFn.FreeCount < 1) {
+    fprintf(stderr, "GetFn: Function arena has ran out of functions.\n");
+    exit(2);
+  }
+
+  FreeFn.FreeCount--;
+  FreeFn.TotalAllocations++;
+  struct FnObject* Fn = FreeFn.NextFn;
+  /* This will be properly initialized forth. */
+  Fn->Type = NO_FN;
+  Fn->Fn = NULL;
+  Fn->MinArgs = 0;
+  Fn->MaxArgs = 0;
+  FreeFn.NextFn += sizeof(struct SymbolObject);
+  return Fn;
+}
+
 /** TYPE PREDICATES. **/
 
 _Bool
@@ -219,6 +264,21 @@ SymbolTypeP (LispObjectImm Object) {
 _Bool
 StringTypeP (LispObjectImm Object) {
   return (Object & TYPEFIELD) == STRING_OBJ;
+}
+
+_Bool
+FnTypeP (LispObjectImm Object) {
+  return (Object & TYPEFIELD) == FN_OBJ;
+}
+
+_Bool
+BuiltInFnP (LispObjectImm Object) {
+  return (FnTypeP(Object) && UntagFn(Object)->Type == BUILT_IN_FN);
+}
+
+_Bool
+InterpLambdaP (LispObjectImm Object) {
+  return (FnTypeP(Object) && UntagFn(Object)->Type == INTERP_LAMBDA);
 }
 
 /** OBARRAY. **/
@@ -306,4 +366,5 @@ PrintAllocationStatistics (FILE* Stream) {
   fprintf(Stream, "Cons cells allocated: %ld\n", FreeCons.TotalAllocations);
   fprintf(Stream, "Small strings allocated: %ld\n", FreeSmallString.TotalAllocations);
   fprintf(Stream, "Symbols allocated: %ld\n", FreeSymbol.TotalAllocations);
+  fprintf(Stream, "Functions allocated: %ld\n", FreeFn.TotalAllocations);
 }
