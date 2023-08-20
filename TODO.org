@@ -4,6 +4,7 @@
 We have the reader & printer working appropiately, we are still missing:
 - The evaluator.
 - Environments.
+- Anonymous functions.
 
 ** TODO Garbage collector.
 We need this, currently we can only allocate a fixed amount of objects.
@@ -14,9 +15,12 @@ It is very messy.
   (we do not have such type yet).
 - Replace all 0 returns with error handling & proper values.
 - Long string support (only short strings are currently supported).
+- The allocation code seem to be bloated, it could likely be split apart into
+  different files.
 
 ** TODO Restructure source code.
 The way it is laid out is messy.
+- Clean up ~alloc.c~
 
 ** TODO Error handling.
 This will without a doubt catch in flames if you look at it wrong.
