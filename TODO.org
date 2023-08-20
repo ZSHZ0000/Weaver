@@ -1,4 +1,4 @@
-* List of TODO stuff for [Current Project Name]
+* List of TODO stuff for Weaver
 
 ** TODO Make it work.
 We have the reader & printer working appropiately, we are still missing:
@@ -32,8 +32,8 @@ This one is needed for actually useful stuff.
 This may be considered since it is a Lisp & such languages can benefit largely
 from macros.
 
-** TODO Give it a definitive name.
-I got no good name for it.
+** DONE Give it a definitive name.
+Weaver.
 
 ** TODO Implement a virtual machine & a compiler accordingly.
 This is certainly ambitious yet something we may need in order to make this
