@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 #include "alloc.h"
+#include "env.h"
 
 /* Tag an integer. */
 LispObjectImm
@@ -182,6 +183,7 @@ GetSymbol () {
   /* This will be properly initialized forth. */
   Symbol->Name = NULL;
   Symbol->Hash = 0;
+  Symbol->Value = 0;
   FreeSymbol.NextFree += sizeof(struct SymbolObject);
   return Symbol;
 }
@@ -196,6 +198,7 @@ MakeSymbol (char* InputString, size_t Length) {
   struct SymbolObject* Symbol = GetSymbol();
   Symbol->Name = UntagString(MakeSmallString(InputString, Length));
   Symbol->Hash = FNV1AHash(Symbol->Name->String, Symbol->Name->Length);
+  Symbol->Value = QuoteNil;
   return TagSymbol(Symbol);
 }
 

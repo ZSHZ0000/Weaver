@@ -22,12 +22,13 @@ enum FnType {
 
 #define TYPEFIELD (CONS_CELL | INTEGER_OBJ | SYMBOL_OBJ | STRING_OBJ | FN_OBJ)
 
+typedef intptr_t LispObjectImm;
+
 struct SymbolObject {
   struct StringObject* Name;
   uintptr_t Hash;
+  LispObjectImm Value;
 };
-
-typedef intptr_t LispObjectImm;
 
 struct ConsObject {
   LispObjectImm Car;
@@ -124,6 +125,9 @@ UntagSymbol (LispObjectImm Symbol);
 
 void
 AllocFreeSymbol ();
+
+struct SymbolObject*
+GetSymbol ();
 
 LispObjectImm
 MakeSymbol (char* InputString, size_t Length);

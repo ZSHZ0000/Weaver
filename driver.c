@@ -3,6 +3,7 @@
 #include "reader.h"
 #include "read.h"
 #include "print.h"
+#include "env.h"
 
 int
 main (int argc, char** argv) {
@@ -21,13 +22,17 @@ main (int argc, char** argv) {
   AllocFreeSymbol();
   AllocFreeSmallString();
   AllocObarray();
-  
+
+  InitEnvironment();
+
   UpdatePeekCharacter(input);
   struct LexemaChain* LexemaChain = ReadLexemaChain(input);
   struct LexemaIndex* LexemaIndex = MakeLexemaIndex(LexemaChain);
 
   LispObjectImm Object = ReadObject1(LexemaIndex);
   PrintObject1(Object, stdout);
+  fprintf(stdout, "\n");
+  PrintObject1(QuoteNil, stdout);
   fprintf(stdout, "\n");
   PrintAllocationStatistics(stderr);
 
