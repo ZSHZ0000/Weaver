@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include "fn.h"
 
 enum ObjectType {
   CONS_CELL,
@@ -13,6 +12,12 @@ enum ObjectType {
   SYMBOL_OBJ,
   STRING_OBJ,
   FN_OBJ
+};
+
+enum FnType {
+  NO_FN,
+  BUILT_IN_FN,
+  INTERP_LAMBDA
 };
 
 #define TYPEFIELD (CONS_CELL | INTEGER_OBJ | SYMBOL_OBJ | STRING_OBJ | FN_OBJ)

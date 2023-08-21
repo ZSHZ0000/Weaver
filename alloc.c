@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include <string.h>
 #include "alloc.h"
-#include "fn.h"
 
 /* Tag an integer. */
 LispObjectImm
