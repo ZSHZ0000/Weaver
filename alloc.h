@@ -151,6 +151,12 @@ TagFn (struct FnObject* Fn);
 struct FnObject*
 UntagFn (LispObjectImm Fn);
 
+struct FnObject*
+MakeBuiltInFn (LispObjectImm (*FnPtr) (LispObjectImm), size_t MinArgs, size_t MaxArgs);
+
+struct FnObject*
+MakeInterpLambda (LispObjectImm Lambda);
+
 void
 AllocFreeFn ();
 
