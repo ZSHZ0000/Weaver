@@ -32,8 +32,7 @@ void
 PrintList (LispObjectImm List, FILE* Stream) {
   putc('(', Stream);
   PrintObject1(GetConsCar(UntagCons(List)), Stream);
-  /* TODO: Change the 0 for NIL or empty list or whatever. */
-  if (GetConsCdr(UntagCons(List)) != 0) {
+  if (GetConsCdr(UntagCons(List)) && GetConsCdr(UntagCons(List)) != QuoteNil) {
     for (LispObjectImm Cons = GetConsCdr(UntagCons(List)); Cons && Cons != QuoteNil; Cons = GetConsCdr(UntagCons(Cons))) {
       putc(' ', Stream);
       PrintObject1(GetConsCar(UntagCons(Cons)), Stream);
@@ -54,4 +53,16 @@ PrintObject1 (LispObjectImm Object, FILE* Stream) {
     PrintSymbol(Object, Stream);
   if (StringTypeP(Object))
     PrintString(Object, Stream);
+  if (FnTypeP(Object)) {
+    if (InterpLambdaP(Object)) {
+      fprintf(Stream, "#<lambda ");
+      /* The lambda arglist.
+      **(SYMBOL ARGLIST EXPR) */
+      PrintObject1(GetConsCar(UntagCons(GetConsCdr(UntagCons(UntagFn(Object)->U.Obj)))),
+		   Stream);
+      fprintf(Stream, ">");
+    }
+    if (BuiltInFnP(Object))
+      fprintf(Stream, "#<built-in-fn>");
+  }
 }

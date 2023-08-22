@@ -28,6 +28,7 @@ struct SymbolObject {
   struct StringObject* Name;
   uintptr_t Hash;
   LispObjectImm Value;
+  LispObjectImm Fn;
 };
 
 struct ConsObject {
@@ -44,7 +45,10 @@ struct FnObject {
   enum FnType Type;
   size_t MinArgs;
   size_t MaxArgs;
-  void* Fn;
+  union {
+    LispObjectImm Obj;
+    LispObjectImm (*CFn) (LispObjectImm);
+  } U;
 };
 
 LispObjectImm

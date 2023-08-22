@@ -184,6 +184,7 @@ GetSymbol () {
   Symbol->Name = NULL;
   Symbol->Hash = 0;
   Symbol->Value = 0;
+  Symbol->Fn = 0;
   FreeSymbol.NextFree += sizeof(struct SymbolObject);
   return Symbol;
 }
@@ -199,6 +200,7 @@ MakeSymbol (char* InputString, size_t Length) {
   Symbol->Name = UntagString(MakeSmallString(InputString, Length));
   Symbol->Hash = FNV1AHash(Symbol->Name->String, Symbol->Name->Length);
   Symbol->Value = QuoteNil;
+  Symbol->Fn = QuoteNil;
   return TagSymbol(Symbol);
 }
 
@@ -239,11 +241,32 @@ GetFn () {
   struct FnObject* Fn = FreeFn.NextFn;
   /* This will be properly initialized forth. */
   Fn->Type = NO_FN;
-  Fn->Fn = NULL;
+  Fn->U.CFn = NULL;
   Fn->MinArgs = 0;
   Fn->MaxArgs = 0;
   FreeFn.NextFn += sizeof(struct SymbolObject);
   return Fn;
+}
+
+struct FnObject*
+MakeBuiltInFn (LispObjectImm (*FnPtr) (LispObjectImm), size_t MinArgs, size_t MaxArgs) {
+  struct FnObject* Function = GetFn();
+  Function->Type = BUILT_IN_FN;
+  Function->U.CFn = FnPtr;
+  Function->MinArgs = MinArgs;
+  Function->MaxArgs = MaxArgs;
+  return Function;
+}
+
+/* Let the evaluator worry about the MinArgs MaxArgs stuff. */
+struct FnObject*
+MakeInterpLambda (LispObjectImm Lambda) {
+  struct FnObject* Function = GetFn();
+  Function->Type = INTERP_LAMBDA;
+  Function->U.Obj = Lambda;
+  Function->MinArgs = 0;
+  Function->MaxArgs = 0;
+  return Function;
 }
 
 /** TYPE PREDICATES. **/
