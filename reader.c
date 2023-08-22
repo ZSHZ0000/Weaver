@@ -258,7 +258,7 @@ ReadLexema (FILE* Stream) {
   /* Rather use this than to delegate or recurse. */
  restart:
   if (EOFReached())
-    return EOFLexema(Stream);
+    return EOFLexema();
   else if (GotError())
     return NoLexema();
   else if (IsWhiteSpace(CurrentCharacter)) {
@@ -338,7 +338,7 @@ MakeLexemaIndex (struct LexemaChain* LexemaChain) {
   LexemaIndex->Chain = LexemaChain;
   LexemaIndex->CurrentSlab = LexemaChain;
   LexemaIndex->NoLexema = NoLexema();
-  LexemaIndex->NoSlab = NewLexemaSlab(NULL, LexemaIndex->NoLexema);
+  LexemaIndex->NoSlab = NewLexemaSlab(NULL, NoLexema());
   return LexemaIndex;
 }
 
