@@ -4,6 +4,7 @@
 #include "read.h"
 #include "print.h"
 #include "env.h"
+#include "eval.h"
 
 int
 main (int argc, char** argv) {
@@ -30,9 +31,7 @@ main (int argc, char** argv) {
   struct LexemaIndex* LexemaIndex = MakeLexemaIndex(LexemaChain);
 
   LispObjectImm Object = ReadObject1(LexemaIndex);
-  PrintObject1(Object, stdout);
-  fprintf(stdout, "\n");
-  PrintObject1(QuoteNil, stdout);
+  PrintObject1(Eval1(Object), stdout);
   fprintf(stdout, "\n");
   PrintAllocationStatistics(stderr);
 

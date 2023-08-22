@@ -1,6 +1,8 @@
 #include <sys/cdefs.h>
 #include "alloc.h"
 #include "env.h"
+#include "print.h"
+#include "read.h"
 
 /* The NIL symbol. */
 LispObjectImm QuoteNil;
@@ -39,8 +41,14 @@ SetEnvVariable (LispObjectImm Symbol, LispObjectImm Value) {
   UntagSymbol(Symbol)->Value = Value;
 }
 
-/* Define a new variable. */
+/* Set symbol's function. */
 void
-DefineEnvVariable (LispObjectImm Symbol, LispObjectImm Value) {
-  UntagSymbol(Symbol)->Value = Value;
+SetEnvFn (LispObjectImm Symbol, LispObjectImm Fn) {
+  UntagSymbol(Symbol)->Fn = Fn;
+}
+
+/* Get symbol's function. */
+LispObjectImm
+GetEnvFn (LispObjectImm Symbol) {
+  return UntagSymbol(Symbol)->Fn;
 }

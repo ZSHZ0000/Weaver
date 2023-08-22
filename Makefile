@@ -4,7 +4,7 @@ FLAGS := -Og -g
 
 .PHONY:
 
-$(EXE): driver.o read.o reader.o alloc.o print.o env.o
+$(EXE): driver.o read.o reader.o alloc.o print.o env.o eval.o
 	cc -o $@ $^
 
 .PHONY: .c.o
@@ -18,6 +18,7 @@ reader.o: reader.c
 alloc.o: alloc.c
 print.o: print.c
 env.o: env.c
+eval.o: eval.c
 
 clean:
 	rm -rf *.o $(EXE) || true

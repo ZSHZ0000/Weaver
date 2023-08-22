@@ -17,6 +17,9 @@ void
 SetEnvVariable (LispObjectImm Symbol, LispObjectImm Value);
 
 void
-DefineEnvVariable (LispObjectImm Symbol, LispObjectImm Value);
+SetEnvFn (LispObjectImm Symbol, LispObjectImm Fn);
+
+LispObjectImm
+GetEnvFn (LispObjectImm Symbol);
 
 #endif /* ENV_H */
