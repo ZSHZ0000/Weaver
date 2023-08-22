@@ -4,6 +4,8 @@
 
 /* The NIL symbol. */
 LispObjectImm QuoteNil;
+LispObjectImm QuoteIf;
+LispObjectImm QuoteQuote; /* LOL! */
 
 /* Initialize environment. */
 void
@@ -14,6 +16,15 @@ InitEnvironment () {
   Nil->Hash = FNV1AHash(Nil->Name->String, Nil->Name->Length);
   Nil->Value = TagSymbol(Nil);
   QuoteNil = TagSymbol(Nil);
+  InternSymbol(Nil);
+
+  struct SymbolObject* If = UntagSymbol(MakeSymbol("if", 2));
+  InternSymbol(If);
+  QuoteIf = TagSymbol(If);
+
+  struct SymbolObject* Quote = UntagSymbol(MakeSymbol("quote", 5));
+  InternSymbol(Quote);
+  QuoteQuote = TagSymbol(Quote);
 }
 
 /* Return the value of the environment variable. */

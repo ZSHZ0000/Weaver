@@ -1,10 +1,9 @@
 #include "reader.h"
 #include "alloc.h"
+#include "env.h"
 
 /* TODO: All 0-set return values MUST be replaced with a proper list value that can be
 ** returned to the interpreter. */
-
-/* TODO: To avoid repeating symbols we need a way to uniquify them & return them if we read a repeat. */
 
 LispObjectImm
 ReadObject1 (struct LexemaIndex* LexemaIndex);
@@ -19,7 +18,6 @@ ReadStringType (struct Lexema* Lexema) {
 /* Read a text lexema into an actual symbol. */
 LispObjectImm
 ReadSymbolType (struct Lexema* Lexema) {
-  /* TODO: We need an obarray. */
   return FindOrMakeSymbol(Lexema->String, Lexema->Length);
 }
 
@@ -51,35 +49,34 @@ ReadNumberType (struct Lexema* Lexema) {
 /* Read a List from the lexema index. */
 LispObjectImm
 ReadListObj (struct LexemaIndex* LexemaIndex) {
-  /* TODO: We could possibly benefit from writing a nice interface to iterate through Lexemas
-  ** without all the manual, error-prone hassle. */
   if (PeekLexema(LexemaIndex)->Type == EOF_LEXEMA || (PeekLexema(LexemaIndex) == NO_LEXEMA))
-    return 0;
+    return QuoteNil;
   /* Guard if. */
   if (PeekLexema(LexemaIndex)->Type == OPEN_PAREN) {
     NextLexema(LexemaIndex);
-    LispObjectImm Head = 0;
+    LispObjectImm Head = QuoteNil;
 
     if (PeekLexema(LexemaIndex)->Type == EOF_LEXEMA || (PeekLexema(LexemaIndex) == NO_LEXEMA))
-      return 0;
+      /* TODO: This should be an error. */
+      return QuoteNil;
     if (PeekLexema(LexemaIndex)->Type == CLOSE_PAREN) {
-      return 0;
+      return QuoteNil;
     }
 
     /* List init. */
-    Head = MakeConsCell(ReadObject1(LexemaIndex), 0);
+    Head = MakeConsCell(ReadObject1(LexemaIndex), QuoteNil);
     LispObjectImm Tail = Head;
 
     while (PeekLexema(LexemaIndex)->Type != EOF_LEXEMA && PeekLexema(LexemaIndex)->Type != NO_LEXEMA) {
       if (PeekLexema(LexemaIndex)->Type == CLOSE_PAREN)
 	return Head;
-      LispObjectImm NextTail = MakeConsCell(ReadObject1(LexemaIndex), 0);
+      LispObjectImm NextTail = MakeConsCell(ReadObject1(LexemaIndex), QuoteNil);
       SetConsCdr(UntagCons(Tail), NextTail);
       Tail = NextTail;
     }
   }
   /* Unreachable if control code is proper. */
-  return 0;
+  return QuoteNil;
 }
 
 /* Read a Lisp object. */
@@ -88,7 +85,8 @@ ReadObject1 (struct LexemaIndex* LexemaIndex) {
   switch (PeekLexema(LexemaIndex)->Type) {
   case NO_LEXEMA:
   case EOF_LEXEMA:
-    return 0;
+    /* TODO: Should be an error. */
+    return QuoteNil;
 
   case MAYBE_NUMBER: {
       LispObjectImm Number = ReadNumberType(PeekLexema(LexemaIndex));
@@ -97,7 +95,6 @@ ReadObject1 (struct LexemaIndex* LexemaIndex) {
     }
 
   case TEXT: {
-    /* TODO: Return unique symbol if another with the same name has been found, high priority. */
     LispObjectImm Symbol = ReadSymbolType(PeekLexema(LexemaIndex));
     NextLexema(LexemaIndex);
     return Symbol;
@@ -117,18 +114,18 @@ ReadObject1 (struct LexemaIndex* LexemaIndex) {
 
     /* This is an error. */
   case CLOSE_PAREN:
-    return 0;
+    return QuoteNil;
 
   case QUOTE: {
     NextLexema(LexemaIndex);
     /* We need the quote symbol here. */
-    LispObjectImm QuotedObject = MakeConsCell(0, ReadObject1(LexemaIndex));
+    LispObjectImm QuotedObject = MakeConsCell(QuoteQuote, ReadObject1(LexemaIndex));
     NextLexema(LexemaIndex);
     return QuotedObject;
   }
 
     /* Control should NEVER reach here, this should raise an error. */
   default:
-    return 0;
+    return QuoteNil;
   }
 }

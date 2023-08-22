@@ -4,6 +4,8 @@
 #include "alloc.h"
 
 extern LispObjectImm QuoteNil;
+extern LispObjectImm QuoteIf;
+extern LispObjectImm QuoteQuote;
 
 void
 InitEnvironment ();
