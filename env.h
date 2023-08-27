@@ -6,6 +6,7 @@
 extern LispObjectImm QuoteNil;
 extern LispObjectImm QuoteIf;
 extern LispObjectImm QuoteQuote;
+extern LispObjectImm QuoteProgn;
 
 void
 InitEnvironment ();
@@ -21,5 +22,8 @@ SetEnvFn (LispObjectImm Symbol, LispObjectImm Fn);
 
 LispObjectImm
 GetEnvFn (LispObjectImm Symbol);
+
+void
+AddCFn (LispObjectImm (*FnPtr) (LispObjectImm), size_t MinArgs, size_t MaxArgs, char* Name, size_t Length);
 
 #endif /* ENV_H */

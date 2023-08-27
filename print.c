@@ -66,3 +66,16 @@ PrintObject1 (LispObjectImm Object, FILE* Stream) {
       fprintf(Stream, "#<built-in-fn>");
   }
 }
+
+LispObjectImm
+Print (LispObjectImm Object) {
+  PrintObject1(GetConsCar(UntagCons(Object)), stdout);
+  return Object;
+}
+
+LispObjectImm
+NL (LispObjectImm Object) {
+  /* TODO: Perhaps we should use a truth value here. */
+  fprintf(stdout ,"\n");
+  return QuoteNil;
+}

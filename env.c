@@ -1,13 +1,12 @@
 #include <sys/cdefs.h>
 #include "alloc.h"
 #include "env.h"
-#include "print.h"
-#include "read.h"
 
 /* The NIL symbol. */
 LispObjectImm QuoteNil;
 LispObjectImm QuoteIf;
 LispObjectImm QuoteQuote; /* LOL! */
+LispObjectImm QuoteProgn;
 
 /* Initialize environment. */
 void
@@ -27,6 +26,10 @@ InitEnvironment () {
   struct SymbolObject* Quote = UntagSymbol(MakeSymbol("quote", 5));
   InternSymbol(Quote);
   QuoteQuote = TagSymbol(Quote);
+
+  struct SymbolObject* Progn = UntagSymbol(MakeSymbol("progn", 5));
+  InternSymbol(Progn);
+  QuoteProgn = TagSymbol(Progn);
 }
 
 /* Return the value of the environment variable. */
@@ -51,4 +54,10 @@ SetEnvFn (LispObjectImm Symbol, LispObjectImm Fn) {
 LispObjectImm
 GetEnvFn (LispObjectImm Symbol) {
   return UntagSymbol(Symbol)->Fn;
+}
+
+/* Add a C function to the function environment.*/
+void
+AddCFn (LispObjectImm (*FnPtr) (LispObjectImm), size_t MinArgs, size_t MaxArgs, char* Name, size_t Length) {
+  SetEnvFn(FindOrMakeSymbol(Name, Length), TagFn(MakeBuiltInFn(FnPtr, MinArgs, MaxArgs)));
 }

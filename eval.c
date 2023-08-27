@@ -11,8 +11,11 @@ ApplyBuiltInFn (LispObjectImm Fn, LispObjectImm Args) {
 LispObjectImm
 Apply (LispObjectImm Expr) {
   LispObjectImm Fn = GetEnvFn(GetConsCar(UntagCons(Expr)));
-  if (BuiltInFnP(Fn))
-    return ApplyBuiltInFn(GetConsCar(UntagCons(Expr)), GetConsCdr(UntagCons(Expr)));
+  LispObjectImm Args = GetConsCdr(UntagCons(Expr));
+  if (Fn == QuoteNil)
+    return QuoteNil;
+  if (FnTypeP(Fn) && BuiltInFnP(Fn))
+    return ApplyBuiltInFn(Fn, Args);
   return QuoteNil;
 }
 
@@ -46,6 +49,15 @@ Eval1 (LispObjectImm Expr) {
       return GetConsCar(UntagCons(GetConsCdr(UntagCons(Expr))));
     else if (GetConsCar(UntagCons(Expr)) == QuoteIf)
       return EvalIf(GetConsCdr(UntagCons(Expr)));
+    else if (GetConsCar(UntagCons(Expr)) == QuoteProgn) {
+      /* Iterate through all values of the list until the last one, then return that one. */
+      LispObjectImm Cons = Expr;
+      LispObjectImm Return = QuoteNil;
+      for (Cons = Expr; Cons && Cons != QuoteNil; Cons = GetConsCdr(UntagCons(Cons)))
+	Return = Eval1(GetConsCar(UntagCons(Cons)));
+
+      return Return;
+    }
     else
       Apply(Expr);
   }

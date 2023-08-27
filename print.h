@@ -7,4 +7,10 @@
 void
 PrintObject1 (LispObjectImm Object, FILE* Stream);
 
+LispObjectImm
+Print (LispObjectImm Object);
+
+LispObjectImm
+NL (LispObjectImm Object);
+
 #endif /* PRINT_H */

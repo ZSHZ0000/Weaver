@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "alloc.h"
+#include "built-in.h"
 #include "reader.h"
 #include "read.h"
 #include "print.h"
@@ -22,9 +24,11 @@ main (int argc, char** argv) {
   AllocFreeCons();
   AllocFreeSymbol();
   AllocFreeSmallString();
+  AllocFreeFn();
   AllocObarray();
 
   InitEnvironment();
+  InitFnEnv();
 
   UpdatePeekCharacter(input);
   struct LexemaChain* LexemaChain = ReadLexemaChain(input);
