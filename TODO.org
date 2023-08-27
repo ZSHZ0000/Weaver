@@ -2,8 +2,9 @@
 
 ** TODO Make it work.
 We have the reader & printer working appropiately, we are still missing:
-- The evaluator.
-- Environments.
+- Dynamic environments, currently we're using a single environment for all
+  our stuff.
+- Add looping constructs.
 - Anonymous functions.
 
 ** TODO Garbage collector.
