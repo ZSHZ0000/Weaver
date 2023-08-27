@@ -5,4 +5,4 @@
   (terpri)
   (print 3)
   (terpri)
-  'test)
+  (quote test))
