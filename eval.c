@@ -12,10 +12,26 @@ LispObjectImm
 Apply (LispObjectImm Expr) {
   LispObjectImm Fn = GetEnvFn(GetConsCar(UntagCons(Expr)));
   LispObjectImm Args = GetConsCdr(UntagCons(Expr));
+  LispObjectImm EvalArgsHead = QuoteNil;
+  LispObjectImm EvalArgsTail = QuoteNil;
+  /* If there is atleast 1 argument, evaluate it. */
+  if (Args != QuoteNil) {
+    EvalArgsHead = MakeConsCell(Eval1(GetConsCar(UntagCons(Args))), QuoteNil);
+    EvalArgsTail = EvalArgsHead;
+
+    /* Built the evaluated arglist. */
+    for (LispObjectImm CurrentArg = GetConsCdr(UntagCons(Args));
+	 CurrentArg && CurrentArg != QuoteNil;
+	 CurrentArg = GetConsCdr(UntagCons(CurrentArg))) {
+      SetConsCdr(UntagCons(EvalArgsTail), MakeConsCell(Eval1(GetConsCar(UntagCons(CurrentArg))), QuoteNil));
+      EvalArgsTail = GetConsCdr(UntagCons(EvalArgsTail));
+    }
+  }
+
   if (Fn == QuoteNil)
     return QuoteNil;
   if (FnTypeP(Fn) && BuiltInFnP(Fn))
-    return ApplyBuiltInFn(Fn, Args);
+    return ApplyBuiltInFn(Fn, Args != QuoteNil ? EvalArgsHead : QuoteNil);
   return QuoteNil;
 }
 

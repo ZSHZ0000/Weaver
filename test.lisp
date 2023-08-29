@@ -1,8 +1,9 @@
 (progn
-  (print 1)
+  (set (quote i) 1)
+  (print i)
   (terpri)
-  (print 2)
+  (print (quote i))
   (terpri)
   (print 3)
   (terpri)
-  (quote test))
+  i)

@@ -35,7 +35,9 @@ main (int argc, char** argv) {
   struct LexemaIndex* LexemaIndex = MakeLexemaIndex(LexemaChain);
 
   LispObjectImm Object = ReadObject1(LexemaIndex);
-  PrintObject1(Eval1(Object), stdout);
+  LispObjectImm Result = Eval1(Object);
+  fprintf(stdout, "Return value: ");
+  PrintObject1(Result, stdout);
   fprintf(stdout, "\n");
   PrintAllocationStatistics(stderr);
 

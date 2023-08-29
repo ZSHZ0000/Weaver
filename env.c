@@ -61,3 +61,33 @@ void
 AddCFn (LispObjectImm (*FnPtr) (LispObjectImm), size_t MinArgs, size_t MaxArgs, char* Name, size_t Length) {
   SetEnvFn(FindOrMakeSymbol(Name, Length), TagFn(MakeBuiltInFn(FnPtr, MinArgs, MaxArgs)));
 }
+
+/* Set variable named by symbol to the value passed to the function. */
+LispObjectImm
+SetVar (LispObjectImm Args) {
+  LispObjectImm Var = GetConsCar(UntagCons(Args));
+  LispObjectImm Value = GetConsCdr(UntagCons(Args));
+  if (Value) {
+    SetEnvVariable(Var, GetConsCar(UntagCons(Value)));
+    return QuoteNil;
+  }
+  else {
+    SetEnvVariable(Var, QuoteNil);
+    return QuoteNil;
+  }
+}
+
+/* Set function named by symbol to the value passed to the function. */
+LispObjectImm
+SetVarFn (LispObjectImm Args) {
+  LispObjectImm Var = GetConsCar(UntagCons(Args));
+  LispObjectImm Value = GetConsCdr(UntagCons(Args));
+  if (Value) {
+    SetEnvFn(Var, GetConsCar(UntagCons(Value)));
+    return QuoteNil;
+  }
+  else {
+    SetEnvFn(Var, QuoteNil);
+    return QuoteNil;
+  }
+}
