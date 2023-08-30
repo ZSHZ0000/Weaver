@@ -1,0 +1,18 @@
+* Weaver
+My own Lisp interpreter.
+
+** How to build it?
+Run the Makefile by doing
+#+BEGIN_SRC
+$ make -j$(nproc)
+#+END_SRC
+it has no build dependencies beyond the standard C library.
+
+** How to run it?
+Run it by doing
+#+BEGIN_SRC
+$ ./Weaver test.lisp
+#+END_SRC
+
+** Prospects
+Read TODO.ORG.
