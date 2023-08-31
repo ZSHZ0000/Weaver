@@ -75,7 +75,7 @@ Eval1 (LispObjectImm Expr) {
       return Return;
     }
     else
-      Apply(Expr);
+      return Apply(Expr);
   }
   return QuoteNil;
 }

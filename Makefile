@@ -1,16 +1,17 @@
 EXE := Weaver
 WARNS := -Wall -Wextra -Wpedantic
 FLAGS := -Og -g
+CC := cc
 
 .PHONY:
 
 $(EXE): driver.o read.o reader.o alloc.o print.o env.o eval.o built-in.o
-	cc -o $@ $^
+	$(CC) -o $@ $^
 
 .PHONY: .c.o
 
 .c.o:
-	cc -c -o $@ $< $(WARNS) $(FLAGS)
+	$(CC) -c -o $@ $< $(WARNS) $(FLAGS)
 
 driver.o: driver.c
 read.o: read.c

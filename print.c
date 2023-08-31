@@ -35,7 +35,13 @@ PrintList (LispObjectImm List, FILE* Stream) {
   if (GetConsCdr(UntagCons(List)) && GetConsCdr(UntagCons(List)) != QuoteNil) {
     for (LispObjectImm Cons = GetConsCdr(UntagCons(List)); Cons && Cons != QuoteNil; Cons = GetConsCdr(UntagCons(Cons))) {
       putc(' ', Stream);
-      PrintObject1(GetConsCar(UntagCons(Cons)), Stream);
+      if (ConsTypeP(Cons))
+	PrintObject1(GetConsCar(UntagCons(Cons)), Stream);
+      else {
+	fprintf(Stream, ". ");
+	PrintObject1(Cons, Stream);
+	break;
+      }
     }
     putc(')', Stream);
   }

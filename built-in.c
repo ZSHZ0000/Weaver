@@ -1,5 +1,6 @@
 #include "alloc.h"
 #include "built-in.h"
+#include "env.h"
 #include "print.h"
 
 void
@@ -11,4 +12,11 @@ InitFnEnv() {
   /* Environment functions. */
   AddCFn(SetVar, 1, 2, "set", 3);
   AddCFn(SetVarFn, 1, 2, "setfn", 5);
+
+  /* Cons cell functions. */
+  AddCFn(Cons, 2, 2, "cons", 4);
+  AddCFn(Car, 1, 1, "car", 3);
+  AddCFn(Cdr, 1, 1, "cdr", 3);
+  AddCFn(RCar, 2, 2, "rcar!", 5);
+  AddCFn(RCdr, 2, 2, "rcdr!", 5);
 }

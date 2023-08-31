@@ -209,4 +209,21 @@ FindOrMakeSymbol (char* String, size_t Length);
 void
 PrintAllocationStatistics (FILE* Stream);
 
+/* Lisp interface to the useful calls. */
+
+LispObjectImm
+Cons (LispObjectImm Args);
+
+LispObjectImm
+Car (LispObjectImm Arg);
+
+LispObjectImm
+Cdr (LispObjectImm Arg);
+
+LispObjectImm
+RCar (LispObjectImm Args);
+
+LispObjectImm
+RCdr (LispObjectImm Args);
+
 #endif /* ALLOC_H */

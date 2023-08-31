@@ -77,7 +77,7 @@ GetConsCell () {
   FreeCons.FreeCount--;
   FreeCons.TotalAllocations++;
   struct ConsObject* Cell = FreeCons.NextFree;
-  FreeCons.NextFree += sizeof(struct ConsObject);
+  FreeCons.NextFree += 1;
   return Cell;
 }
 
@@ -185,7 +185,7 @@ GetSymbol () {
   Symbol->Hash = 0;
   Symbol->Value = 0;
   Symbol->Fn = 0;
-  FreeSymbol.NextFree += sizeof(struct SymbolObject);
+  FreeSymbol.NextFree += 1;
   return Symbol;
 }
 
@@ -244,7 +244,7 @@ GetFn () {
   Fn->U.CFn = NULL;
   Fn->MinArgs = 0;
   Fn->MaxArgs = 0;
-  FreeFn.NextFn += sizeof(struct SymbolObject);
+  FreeFn.NextFn += 1;
   return Fn;
 }
 
@@ -343,10 +343,16 @@ InsertIntoBucket (struct ObarrayBucket* Bucket, struct SymbolObject* Symbol) {
     Bucket->Symbol = Symbol;
     return;
   }
-  struct ObarrayBucket* NextBucket = NULL;
-  struct ObarrayBucket* PrevBucket = Bucket;
 
-  for (NextBucket = PrevBucket->Next; NextBucket; PrevBucket = NextBucket);
+  struct ObarrayBucket* PrevBucket = Bucket;
+  struct ObarrayBucket* NextBucket = NULL;
+
+  /* Walk until you find the last bucket. */
+  for (NextBucket = PrevBucket->Next;
+       NextBucket;) {
+    PrevBucket = NextBucket;
+    NextBucket = NextBucket->Next;
+  }
 
   PrevBucket->Next = malloc(sizeof(struct ObarrayBucket));
   NextBucket = PrevBucket->Next;
@@ -392,4 +398,38 @@ PrintAllocationStatistics (FILE* Stream) {
   fprintf(Stream, "Small strings allocated: %ld\n", FreeSmallString.TotalAllocations);
   fprintf(Stream, "Symbols allocated: %ld\n", FreeSymbol.TotalAllocations);
   fprintf(Stream, "Functions allocated: %ld\n", FreeFn.TotalAllocations);
+}
+
+/* Lisp interface. */
+LispObjectImm
+Cons (LispObjectImm Args) {
+  LispObjectImm Car = GetConsCar(UntagCons(Args));
+  LispObjectImm Cdr = GetConsCar(UntagCons(GetConsCdr(UntagCons(Args))));
+  return MakeConsCell(Car, Cdr);
+}
+
+LispObjectImm
+Car (LispObjectImm Arg) {
+  return GetConsCar(UntagCons(GetConsCar(UntagCons(Arg))));
+}
+
+LispObjectImm
+Cdr (LispObjectImm Arg) {
+  return GetConsCdr(UntagCons(GetConsCar(UntagCons(Arg))));
+}
+
+LispObjectImm
+RCar (LispObjectImm Args) {
+  LispObjectImm Cons = GetConsCar(UntagCons(Args));
+  LispObjectImm NewCar = GetConsCar(UntagCons(GetConsCdr(UntagCons(Args))));
+  SetConsCar(UntagCons(Cons), NewCar);
+  return Cons;
+}
+
+LispObjectImm
+RCdr (LispObjectImm Args) {
+  LispObjectImm Cons = GetConsCar(UntagCons(Args));
+  LispObjectImm NewCdr = GetConsCar(UntagCons(GetConsCdr(UntagCons(Args))));
+  SetConsCdr(UntagCons(Cons), NewCdr);
+  return Cons;
 }
