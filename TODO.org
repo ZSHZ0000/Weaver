@@ -2,13 +2,17 @@
 
 ** TODO Make it work.
 We have the reader & printer working appropiately, we are still missing:
-- Dynamic environments, currently we're using a single environment for all
-  our stuff.
+- Dynamically allocated environments, currently we're using a single environment
+  for all our stuff.
 - Add looping constructs.
 - Anonymous functions.
 
 ** TODO Garbage collector.
 We need this, currently we can only allocate a fixed amount of objects.
+- I've been looking at garbage collectors & I believe mark-region collectors may
+  be a reasonable choice for this application, through a generational mark-sweep
+  couldn't be bad, it's simple enough & performs better than a normal mark-sweep
+  algorithm.
 
 ** TODO Clean up the source code.
 It is very messy.
@@ -21,7 +25,8 @@ It is very messy.
 
 ** TODO Restructure source code.
 The way it is laid out is messy.
-- Clean up ~alloc.c~
+- Clean up ~alloc.c~, it currently has some stuff that could otherwise go into
+  other file, like the Lisp interface for the cons objects.
 
 ** TODO Error handling.
 This will without a doubt catch in flames if you look at it wrong.
