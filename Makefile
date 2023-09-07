@@ -4,8 +4,7 @@ FLAGS := -Og -g
 CC := cc
 
 .PHONY:
-
-$(EXE): driver.o read.o reader.o alloc.o print.o env.o eval.o built-in.o
+$(EXE): src/driver.o src/read.o src/reader.o src/alloc.o src/print.o src/env.o src/eval.o src/built-in.o
 	$(CC) -o $@ $^
 
 .PHONY: .c.o clean
@@ -13,14 +12,14 @@ $(EXE): driver.o read.o reader.o alloc.o print.o env.o eval.o built-in.o
 .c.o:
 	$(CC) -c -o $@ $< $(WARNS) $(FLAGS)
 
-driver.o: driver.c
-read.o: read.c
-reader.o: reader.c
-alloc.o: alloc.c
-print.o: print.c
-env.o: env.c
-eval.o: eval.c
-built-in.o: built-in.c
+src/driver.o: src/driver.c
+src/read.o: src/read.c
+src/reader.o: src/reader.c
+src/alloc.o: src/alloc.c
+src/print.o: src/print.c
+src/env.o: src/env.c
+src/eval.o: src/eval.c
+src/built-in.src/o: built-in.c
 
 clean:
-	rm -rf *.o $(EXE) || true
+	rm -rf src/*.o $(EXE) || true
