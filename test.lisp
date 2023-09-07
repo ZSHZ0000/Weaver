@@ -13,4 +13,6 @@
   (rcdr! i 4)
   (print "now the value of i is: ")
   (print i)
+  (terpri)
+  (print (memstats))
   (terpri))

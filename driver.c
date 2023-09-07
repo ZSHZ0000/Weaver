@@ -39,7 +39,6 @@ main (int argc, char** argv) {
   fprintf(stdout, "Return value: ");
   PrintObject1(Result, stdout);
   fprintf(stdout, "\n");
-  PrintAllocationStatistics(stderr);
 
   FreeLexemaIndex(LexemaIndex);
   FreeLexemaChain(LexemaChain);

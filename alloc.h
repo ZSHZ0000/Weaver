@@ -226,4 +226,7 @@ RCar (LispObjectImm Args);
 LispObjectImm
 RCdr (LispObjectImm Args);
 
+LispObjectImm
+AllocStatistics (LispObjectImm Args);
+
 #endif /* ALLOC_H */

@@ -19,4 +19,7 @@ InitFnEnv() {
   AddCFn(Cdr, 1, 1, "cdr", 3);
   AddCFn(RCar, 2, 2, "rcar!", 5);
   AddCFn(RCdr, 2, 2, "rcdr!", 5);
+
+  /* Alloc statistics. */
+  AddCFn(AllocStatistics, 0, 0, "memstats", 8);
 }

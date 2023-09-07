@@ -433,3 +433,12 @@ RCdr (LispObjectImm Args) {
   SetConsCdr(UntagCons(Cons), NewCdr);
   return Cons;
 }
+
+LispObjectImm
+AllocStatistics (LispObjectImm Arg) {
+  LispObjectImm ConsCellsCount = TagInt(FreeCons.TotalAllocations);
+  LispObjectImm SmallStringCount = TagInt(FreeSmallString.TotalAllocations);
+  LispObjectImm SymbolCount = TagInt(FreeSymbol.TotalAllocations);
+  LispObjectImm FnCount = TagInt(FreeFn.TotalAllocations);
+  return MakeConsCell(ConsCellsCount, MakeConsCell(SmallStringCount, MakeConsCell(SymbolCount, MakeConsCell(FnCount, QuoteNil))));
+}
