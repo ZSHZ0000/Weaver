@@ -8,7 +8,7 @@ CC := cc
 $(EXE): driver.o read.o reader.o alloc.o print.o env.o eval.o built-in.o
 	$(CC) -o $@ $^
 
-.PHONY: .c.o
+.PHONY: .c.o clean
 
 .c.o:
 	$(CC) -c -o $@ $< $(WARNS) $(FLAGS)
