@@ -4,6 +4,12 @@
 #include "alloc.h"
 #include "env.h"
 
+uintptr_t
+Length (LispObjectImm List);
+
+LispObjectImm
+ListLength (LispObjectImm Arg);
+
 LispObjectImm
 ApplyBuiltInFn (LispObjectImm Fn, LispObjectImm Args);
 

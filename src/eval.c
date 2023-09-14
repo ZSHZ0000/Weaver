@@ -2,6 +2,22 @@
 #include "env.h"
 #include "eval.h"
 
+uintptr_t
+Length (LispObjectImm List) {
+  if (List == QuoteNil)
+    return 0;
+  uintptr_t Len = 0;
+  for (LispObjectImm Cons = List; Cons != QuoteNil; Cons = GetConsCdr(UntagCons(Cons))) {
+    Len++;
+  }
+  return Len;
+}
+
+LispObjectImm
+ListLength (LispObjectImm Arg) {
+  return TagInt(Length(GetConsCar(UntagCons(Arg))));
+}
+
 LispObjectImm
 ApplyBuiltInFn (LispObjectImm Fn, LispObjectImm Args) {
   struct FnObject* Function = UntagFn(Fn);
